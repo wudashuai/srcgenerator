@@ -36,10 +36,13 @@ public:
 #endif
 
 '''
+
+from src.data.class_description import ClassDescription
+
 NEW_LINE = '\n'
 
 class HFileTextGenerator:
-    def __init(self, class_description=None):
+    def __init__(self, class_description=None):
         self.class_description = class_description
 
     def generate_h_file_text(self):
@@ -52,7 +55,18 @@ class HFileTextGenerator:
         return h_file_text
 
     def generate_h_file_part1(self):
+        project_name = self.class_description.get_project_path()
+        class_name = self.class_description.get_class_name()
+        include_files = self.class_description.get_include_files()
         h_file_part1 = ''
+        h_file_part1 += '#ifdef ' + project_name.upper() + '_' + class_name.upper() + '_H_' + NEW_LINE
+        h_file_part1 += '#define ' + project_name.upper() + '_' + class_name.upper() + '_H_' + NEW_LINE
+        h_file_part1 += NEW_LINE
+
+        for inc_file in include_files:
+            h_file_part1 += '#include <' + inc_file + '>' + NEW_LINE
+
+        h_file_part1 += NEW_LINE + NEW_LINE
 
         return h_file_part1
 
@@ -73,5 +87,18 @@ class HFileTextGenerator:
 
 
 if __name__ == '__main__':
-    h_file_text_generator = HFileTextGenerator()
-    print(h_file_text_generator.generate_h_file_part3())
+    project_path_temp = 'src'
+    class_name_temp = 'file'
+    include_files_temp = ['vector', 'string', 'time.h', 'file.h']
+    declare_vars_temp = []
+    attributes_temp = []
+
+    class_description_temp = ClassDescription(project_path_temp,
+                                              class_name_temp,
+                                              include_files_temp,
+                                              declare_vars_temp,
+                                              attributes_temp)
+
+    h_file_text_generator = HFileTextGenerator(class_description_temp)
+
+    print(h_file_text_generator.generate_h_file_part1())
